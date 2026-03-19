@@ -1,0 +1,10 @@
+{
+  "name": "e2e-cloud",
+  "version": "1.0.0",
+  "description": "E2E Networks cloud automation skills for Claude Code",
+  "author": "E2E Networks",
+  "skills": [
+    "three-tier-arch",
+    "three-tier-dr"
+  ]
+}
