@@ -4,9 +4,7 @@
   "description": "E2E Networks cloud automation skills for Claude Code",
   "author": "E2E Networks",
   "skills": [
-    "launch-node",
     "three-tier-arch",
-    "create-dr-plan",
     "three-tier-dr"
   ]
 }

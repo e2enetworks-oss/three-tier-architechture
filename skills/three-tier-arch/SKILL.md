@@ -532,7 +532,7 @@ All <total> nodes are Running!
 If the user chose **SSH installation**, SSH into each node and run the installation commands.
 If the user chose **start scripts**, this phase was already handled in Phase 2 (scripts run at boot). Skip to Phase 4.
 
-For SSH, use: `ssh -o StrictHostKeyChecking=no root@<PUBLIC_IP> '<commands>'`
+For SSH, use: `ssh -o StrictHostKeyChecking=accept-new root@<PUBLIC_IP> '<commands>'`
 
 **IMPORTANT**: After node shows `Running`, wait 30 seconds before first SSH attempt. If SSH fails, retry up to 3 times with 15-second gaps (the node may still be booting).
 

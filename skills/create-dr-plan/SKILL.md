@@ -180,7 +180,7 @@ for node in resolved:
     code = resp.get("code", "?")
     msg = resp.get("message", "")
     plan_id = resp.get("data", {}).get("id", "") if isinstance(resp.get("data"), dict) else ""
-    status = "SUCCESS" if code == 200 or code == 201 else "FAILED"
+    status = "SUCCESS" if code in (200, 201) else "FAILED"
     print(f"  [{status}] {node['name']} (ID: {node['id']}) → plan '{plan_name}' | code={code} {msg}")
     results.append({
         "node": node["name"],

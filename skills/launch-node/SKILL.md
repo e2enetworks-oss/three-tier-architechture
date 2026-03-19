@@ -2,7 +2,7 @@
 name: launch-node
 description: Launch a VM/node on E2E Networks. Use when the user wants to create, spin up, or launch a node/VM/instance on E2E Networks cloud.
 disable-model-invocation: true
-allowed-tools: Bash, WebFetch, ToolSearch, Read, Glob, Grep, AskUserQuestion
+allowed-tools: Bash, ToolSearch, Read, Glob, Grep, AskUserQuestion
 argument-hint: "[node specs e.g. 'ubuntu 24.04 8GB RAM named my-server']"
 ---
 
@@ -201,7 +201,7 @@ ON SUCCESS: Save `id`, proceed to polling
 GET {BASE_URL}/myaccount/api/v1/nodes/{NODE_ID}/?apikey={API_KEY}&project_id={PROJECT_ID}&location={LOCATION}
 ```
 
-Poll every 20 seconds. Max 10 polls (~3.5 min). Stop when `status` is `Running` or `Failed`.
+Poll every 20 seconds. Max 20 polls (~6.7 min). Stop when `status` is `Running` or `Failed`.
 
 ---
 

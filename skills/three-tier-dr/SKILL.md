@@ -161,7 +161,7 @@ Payload per node:
 **IMPORTANT**: `recovery_point_retention_days` must be a **string** (`"7"` not `7`).
 
 ```python
-import time
+import subprocess, json, time
 
 def create_dr_plan(api_key, project_id, location, token, payload):
     r = subprocess.run([
@@ -346,7 +346,9 @@ The LB nodes must proxy to the **DR replica nodes at the target location**, not 
 ```python
 target_nodes = get_all_nodes(API_KEY, PROJECT_ID, TARGET_LOCATION, API_TOKEN)
 
-# Match by same name as source nodes
+# NOTE: DR replica nodes are expected to have the same name as source nodes at the target location.
+# If replicas are named differently by the DRaaS system, they will not be found here.
+# In that case, check the target location's node list and update the names accordingly.
 target_frontend_nodes = [
     next((n for n in target_nodes if n["name"].lower() == src["name"].lower()), None)
     for src in frontend_nodes
@@ -369,8 +371,10 @@ target_backend_nodes  = [n for n in target_backend_nodes  if n]
 
 if not target_frontend_nodes:
     print("ERROR: No frontend DR target nodes found at target location. Cannot configure Frontend LB.")
+    exit(1)
 if not target_backend_nodes:
     print("ERROR: No backend DR target nodes found at target location. Cannot configure Backend LB.")
+    exit(1)
 
 print("DR target nodes resolved at %s:" % TARGET_LOCATION)
 for n in target_frontend_nodes:
@@ -384,9 +388,9 @@ for n in target_backend_nodes:
 ```python
 for ip in [fe_lb_public_ip, be_lb_public_ip]:
     subprocess.run(["ssh-keygen", "-R", ip], capture_output=True)
-```
 
-Wait 30 seconds after Running before first SSH attempt.
+time.sleep(30)  # wait for both LB nodes to fully boot after Running
+```
 
 ### Step 5.2 — SSH retry wrapper
 
@@ -394,7 +398,7 @@ Wait 30 seconds after Running before first SSH attempt.
 def wait_for_ssh(ip, retries=3, wait=15):
     for attempt in range(1, retries + 1):
         r = subprocess.run([
-            "ssh", "-o", "StrictHostKeyChecking=no",
+            "ssh", "-o", "StrictHostKeyChecking=accept-new",
             "-o", "ConnectTimeout=15",
             f"root@{ip}", "echo ok"
         ], capture_output=True, text=True)
@@ -452,10 +456,9 @@ nginx -t && systemctl restart nginx && systemctl enable nginx
 echo "FRONTEND_LB_CONFIGURED"
 """
 
-time.sleep(30)  # wait for node to fully boot after Running
 if wait_for_ssh(fe_lb_public_ip):
     r = subprocess.run([
-        "ssh", "-o", "StrictHostKeyChecking=no",
+        "ssh", "-o", "StrictHostKeyChecking=accept-new",
         f"root@{fe_lb_public_ip}", fe_script
     ], capture_output=True, text=True)
     if "FRONTEND_LB_CONFIGURED" in r.stdout:
@@ -509,7 +512,7 @@ echo "BACKEND_LB_CONFIGURED"
 
 if wait_for_ssh(be_lb_public_ip):
     r = subprocess.run([
-        "ssh", "-o", "StrictHostKeyChecking=no",
+        "ssh", "-o", "StrictHostKeyChecking=accept-new",
         f"root@{be_lb_public_ip}", be_script
     ], capture_output=True, text=True)
     if "BACKEND_LB_CONFIGURED" in r.stdout:
